@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum QuestionType {
+  SC
+  MC
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String
+  role          String   @default("ADMIN")
+  createdAt     DateTime @default(now())
+  questionSets  QuestionSet[]
+  quizzes       Quiz[]
+}
+
+model Branding {
+  id         String   @id @default(cuid())
+  name       String   @default("Default")
+  logoUrl    String?
+  primaryHex String?
+  accentHex  String?
+  updatedAt  DateTime @updatedAt
+}
+
+model QuestionSet {
+  id           String       @id @default(cuid())
+  name         String
+  createdById  String
+  createdBy    User         @relation(fields: [createdById], references: [id])
+  createdAt    DateTime     @default(now())
+  isActive     Boolean      @default(true)
+  questions    Question[]
+  quizzes      Quiz[]
+}
+
+model Question {
+  id             String       @id @default(cuid())
+  questionSetId  String
+  questionSet    QuestionSet  @relation(fields: [questionSetId], references: [id])
+  text           String
+  options        String[]
+  type           QuestionType @default(SC)
+  correctIndices Int[]
+  order          Int
+  answers        Answer[]
+}
+
+model Quiz {
+  id               String   @id @default(cuid())
+  quizCode         String   @unique
+  name             String
+  questionSetId    String
+  questionSet      QuestionSet @relation(fields: [questionSetId], references: [id])
+  isActive         Boolean  @default(true)
+  timeLimitSeconds Int      @default(1800)
+  questionCount    Int      @default(20)
+  shuffleQuestions Boolean  @default(true)
+  shuffleOptions   Boolean  @default(true)
+  createdById      String
+  createdBy        User     @relation(fields: [createdById], references: [id])
+  createdAt        DateTime @default(now())
+  participants     Participant[]
+}
+
+model Participant {
+  id        String   @id @default(cuid())
+  quizId    String
+  quiz      Quiz     @relation(fields: [quizId], references: [id])
+  name      String
+  email     String
+  mobile    String
+  status    String   @default("CREATED")
+  createdAt DateTime @default(now())
+  attempt   Attempt?
+  @@unique([quizId, email])
+}
+
+model Attempt {
+  id              String   @id @default(cuid())
+  participantId   String   @unique
+  participant     Participant @relation(fields:[participantId], references:[id])
+  startedAt       DateTime @default(now())
+  submittedAt     DateTime?
+  score           Int      @default(0)
+  durationSeconds Int      @default(0)
+  violations      Int      @default(0)   // <-- keep this line
+  answers         Answer[]
+}
+
+model Answer {
+  id           String   @id @default(cuid())
+  attemptId    String
+  attempt      Attempt  @relation(fields: [attemptId], references: [id])
+  questionId   String
+  question     Question @relation(fields: [questionId], references: [id])
+  selected     Int[]
+  isCorrect    Boolean
+}

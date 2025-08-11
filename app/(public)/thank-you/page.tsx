@@ -1,0 +1,1 @@
+export default function ThankYou(){return (<main className='mx-auto max-w-lg p-6 space-y-4 text-center'><h1 className='text-2xl font-semibold'>Thanks!</h1><p>Your submission has been received.</p></main>)}
