@@ -6,10 +6,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
-    "start": "next start",
+    "start": "node server.js",
     "postinstall": "prisma generate",
     "prisma:generate": "prisma generate",
-    "seed:admin": "tsx scripts/seed-admin.ts",
+    "seed:admin": "node -e \"process.env.NODE_ENV='production'; require('tsx/cli').run(['scripts/seed-admin.ts'])\"",
     "seed:samples": "tsx scripts/seed-sample-data.ts",
     "bulk:participants": "tsx scripts/bulk-create-participants.ts"
   },
