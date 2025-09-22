@@ -1,3 +1,6 @@
+export const runtime = 'nodejs'
+
+
 import { prisma } from "@/src/lib/db"
 import { NextResponse } from "next/server"
 import { parse } from "csv-parse/sync"

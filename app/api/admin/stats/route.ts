@@ -11,14 +11,15 @@ function parseRange(r?: string) {
 }
 
 async function getPassMark() {
-  try {
-    const rows = await prisma.$queryRaw<{ value: string }[]>`
-      SELECT value FROM "Config" WHERE key='PASS_MARK_PERCENT'`
-    const n = parseInt(rows[0]?.value || '50', 10)
-    return Number.isFinite(n) ? Math.max(1, Math.min(100, n)) : 50
-  } catch {
-    return 50
-  }
+  return 50;
+  // try {
+  //   const rows = await prisma.$queryRaw<{ value: string }[]>`
+  //     SELECT value FROM "Config" WHERE key='PASS_MARK_PERCENT'`
+  //   const n = parseInt(rows[0]?.value || '50', 10)
+  //   return Number.isFinite(n) ? Math.max(1, Math.min(100, n)) : 50
+  // } catch {
+  //   return 50
+  // }
 }
 
 export async function GET(req: Request) {
